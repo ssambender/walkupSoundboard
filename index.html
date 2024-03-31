@@ -64,17 +64,17 @@
         text-transform: uppercase;
     }
 
-    #leftSide::-webkit-scrollbar {
+    *::-webkit-scrollbar {
         width: 14px;
     }
-    #leftSide::-webkit-scrollbar-track {
-        background: #222;
+    *::-webkit-scrollbar-track {
+        background: rgba(34, 34, 34, 0);
     }
-    #leftSide::-webkit-scrollbar-thumb {
+    *::-webkit-scrollbar-thumb {
         background-color: #333;
         border-radius: 10px;
     }
-    #leftSide::-webkit-scrollbar-thumb:hover {
+    *::-webkit-scrollbar-thumb:hover {
         background-color: #444;
     }
 
@@ -155,6 +155,24 @@
         }
     }
 
+    @keyframes colorFadeBorder {
+        0% {
+            border: solid 3px var(--primary2);
+            box-shadow: inset 0 0 20px var(--primary2);
+        }
+        50% {
+            border: solid 3px var(--primary1);
+            box-shadow: inset 0 0 20px var(--primary1);
+        }
+        100% {
+            border: solid 3px var(--primary2);
+            box-shadow: inset 0 0 20px var(--primary2);
+        }
+    }
+    .activeLeft {
+        animation: colorFadeBorder 1.5s infinite ease-in-out;
+    }
+
 
     #rightContainer {
         height: 100vh;
@@ -174,6 +192,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+
+        overflow-y: scroll;
     }
     #rightSide h1 {
         color: var(--text1);
@@ -183,7 +203,8 @@
 
     #editSongContainer {
         width: 80%;
-        margin-top: 15px;
+        margin-top: 30px;
+        margin-bottom: 10px;
         box-sizing: border-box;
         padding: 15px 10px 5px 10px;
         border: dashed 2px var(--secondary2);
@@ -192,7 +213,7 @@
     }
     .editSongRow {
         width: 98%;
-        height: 50px;
+        height: 55px;
         margin: 5px 1% 15px 1%;
         border: solid 2px var(--secondary2);
         border-radius: 5px;
@@ -409,6 +430,7 @@
                 activeButton.classList.remove('activeSoundboardButton');
             }
             button.classList.add('activeSoundboardButton');
+            document.querySelector('#leftSide').classList.add('activeLeft');
             activeButton = button;
         }
 
@@ -451,6 +473,7 @@
         // When a song is stopped or is over
         function songOverUpdate() {
             activeButton.classList.remove('activeSoundboardButton');
+            document.querySelector('#leftSide').classList.remove('activeLeft');
             document.querySelector('#stopButton').classList.add('disableButton');
         }
 
