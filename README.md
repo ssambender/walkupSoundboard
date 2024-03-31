@@ -14,3 +14,6 @@ A local-based audio streaming interface designed to save song orders, and start 
 - Add an END AT option
 - Drag and drop reordering of the songs on the soundboard
 - Export your START AT and END AT times for each song so walkup setlists can be saved as ZIPs
+- Autoplay thru soundboard songs in order option
+- Highlight song in edit screen while playing
+- Change color scheme options
