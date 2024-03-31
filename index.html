@@ -16,8 +16,31 @@
         --secondary1: rgb(255, 0, 250);
         --secondary2: rgba(255, 0, 250, 0.5);
 
+        --bg: #222;
+        --bg2: #333;
+        --bg3: #444;
+
         --text1: #494949;
         --text2: #b2b2b2;
+    }
+
+    .colorPickerContainer {
+        position: absolute;
+
+        top: 40px;
+        right: 50px;
+    }
+    .colorPickerContainer input {
+        margin: 5px;
+        outline: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        background: none;
     }
 
     /* Remove arrows from num input box */
@@ -34,7 +57,7 @@
         margin: 0;
         font-family: sans-serif;
         display: flex;
-        background: #222;
+        background: var(--bg);
     }
 
     #leftContainer {
@@ -71,11 +94,11 @@
         background: rgba(34, 34, 34, 0);
     }
     *::-webkit-scrollbar-thumb {
-        background-color: #333;
+        background-color: var(--bg2);
         border-radius: 10px;
     }
     *::-webkit-scrollbar-thumb:hover {
-        background-color: #444;
+        background-color: var(--bg3);
     }
 
     .controlsContainer {
@@ -85,7 +108,7 @@
         justify-content: space-evenly;
     }
     .controlsContainer button {
-        background: #333;
+        background: var(--bg2);
         border: none;
         padding: 4px 8px;
         cursor: pointer;
@@ -99,14 +122,20 @@
         color: var(--secondary2);
     }
     .controlsContainer button:hover {
-        background: #444;
+        background: var(--bg3);
     }
 
     .controlsContainer .disableButton, .controlsContainer .disableButton:hover {
-        background: #222;
-        color: #333 !important;
+        background: var(--bg);
+        color: var(--bg2) !important;
         cursor: default;
         pointer-events: none;
+    }
+    .controlsContainer div {
+        color: var(--primary2);
+    }
+    .controlsContainer input {
+        background: none;
     }
 
     #soundboard {
@@ -131,14 +160,14 @@
     .songButton:hover {
         background: var(--primary1);
         border: solid 2px var(--primary1);
-        color: #222;
+        color: var(--bg);
     }
     .activeSoundboardButton {
         animation: colorFade 1.5s infinite ease-in-out;
         color: var(--primary1);
     }
     .activeSoundboardButton:hover {
-        color: #222 !important;
+        color: var(--bg) !important;
     }
     @keyframes colorFade {
         0% {
@@ -264,7 +293,7 @@
         cursor: pointer;
     }
     .editSongControls button {
-        background: #333;
+        background: var(--bg2);
         border: none;
         padding: 4px 8px;
         cursor: pointer;
@@ -272,7 +301,7 @@
         border-radius: 5px;
     }
     .editSongControls button:hover {
-        background: #444;
+        background: var(--bg3);
     }
 
 </style>
@@ -280,10 +309,16 @@
 <!-- BODY -->
 <body>
 
+<div class="colorPickerContainer">
+    <input type="color" id="color1input" value="#00FFE1" title="Left Color">
+    <input type="color" id="color2input" value="#FF00FA" title="Right Color">
+</div>
+
 <div id="leftContainer">
     <div id="leftSide">
         <h1>Soundboard</h1>
         <div class="controlsContainer">
+            <div>FADE IN:<input type="checkbox" id="fadeInCheckbox"></div>
             <button id="stopButton" class="disableButton">STOP ALL SOUNDS</button>
         </div>
         <div id="soundboard">
@@ -318,6 +353,28 @@
         let currentAudio = null;
         let activeButton = null; // Track the currently active button
 
+        let fadeIn = false
+
+        const fadeInCheckbox = document.getElementById('fadeInCheckbox');
+        fadeInCheckbox.addEventListener('change', function() {
+            // Toggle the value of fadeIn based on the checkbox state
+            fadeIn = this.checked;
+        });
+
+        // Update the primary and secondary colors from input
+        const color1input = document.getElementById('color1input');
+        color1input.addEventListener('input', function() {
+            document.documentElement.style.setProperty('--primary1', this.value);
+            document.documentElement.style.setProperty('--primary2', `${this.value}80`); // Add 80 (which is 50% in hex) for opacity
+        });
+
+        const color2input = document.getElementById('color2input');
+        color2input.addEventListener('input', function() {
+            document.documentElement.style.setProperty('--secondary1', this.value);
+            document.documentElement.style.setProperty('--secondary2', `${this.value}80`); // Add 80 (which is 50% in hex) for opacity
+        });
+
+
         // Function to create buttons and edit rows for saved songs
         function createButtonsAndEditRows() {
             for (let key in mySongs) {
@@ -340,11 +397,30 @@
                 if (song.startAt) {
                     audioElement.currentTime = song.startAt;
                 }
+
+                // Setting initial volume to 0
+                audioElement.volume = 0;
+
                 audioElement.play();
                 currentAudio = audioElement;
                 toggleActiveButton(button);
 
                 document.querySelector('#stopButton').classList.remove('disableButton');
+
+                // Implementing fade-in effect
+                let fadeStep = 1;
+                if (fadeIn === true) {
+                    fadeStep = .05;
+                }
+                let currentVolume = 0;
+                const fadeInInterval = setInterval(function() {
+                    currentVolume += fadeStep;
+                    if (currentVolume >= 1) {
+                        clearInterval(fadeInInterval);
+                        currentVolume = 1; // Ensure volume is set to 1 at the end
+                    }
+                    audioElement.volume = currentVolume;
+                }, 100); // Adjust the interval duration as needed
 
                 audioElement.addEventListener('ended', function() {
                     if (activeButton === button) {
@@ -362,7 +438,7 @@
             editRow.classList.add('editSongRow');
             const songNameDiv = document.createElement('div');
             songNameDiv.classList.add('songName');
-            songNameDiv.innerHTML = `SONG: <span>${song.name}</span>`;
+            songNameDiv.innerHTML = `SONG:  <span>${song.name}</span>`;
             editRow.appendChild(songNameDiv);
             const editSongControlsDiv = document.createElement('div');
             editSongControlsDiv.classList.add('editSongControls');
