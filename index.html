@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walkup Soundboard</title>
+    <link rel="shortcut icon" type="image/png" sizes="32x32" href="favicon.png">
+</head>
+
+<!-- STYLE -->
+<style>
+    :root {
+        --primary1: rgb(0, 255, 225);
+        --primary2: rgba(0, 255, 225, 0.5);
+
+        --secondary1: rgb(255, 0, 250);
+        --secondary2: rgba(255, 0, 250, 0.5);
+
+        --text1: #494949;
+        --text2: #b2b2b2;
+    }
+
+    /* Remove arrows from num input box */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {-moz-appearance: textfield;}
+
+    body {
+        height: 100vh;
+        width: 100vw;
+        margin: 0;
+        font-family: sans-serif;
+        display: flex;
+        background: #222;
+    }
+
+    #leftContainer {
+        height: 100vh;
+        width: 25vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px 0 15px 15px;
+        box-sizing: border-box;
+    }
+
+    #leftSide {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+
+        box-sizing: border-box;
+        border: solid 3px var(--primary1);
+    }
+    #leftSide h1 {
+        color: var(--text1);
+        padding-top: 20px;
+        text-transform: uppercase;
+    }
+
+    #leftSide::-webkit-scrollbar {
+        width: 14px;
+    }
+    #leftSide::-webkit-scrollbar-track {
+        background: #222;
+    }
+    #leftSide::-webkit-scrollbar-thumb {
+        background-color: #333;
+        border-radius: 10px;
+    }
+    #leftSide::-webkit-scrollbar-thumb:hover {
+        background-color: #444;
+    }
+
+    .controlsContainer {
+        display: flex;
+        width: 100%;
+        padding: 16px 0 20px 0;
+        justify-content: space-evenly;
+    }
+    .controlsContainer button {
+        background: #333;
+        border: none;
+        padding: 4px 8px;
+        cursor: pointer;
+        color: var(--primary2);
+        border-radius: 5px;
+    }
+    #rightSide .controlsContainer {
+        width: 50%;
+    }
+    #rightSide .controlsContainer button {
+        color: var(--secondary2);
+    }
+    .controlsContainer button:hover {
+        background: #444;
+    }
+
+    .controlsContainer .disableButton, .controlsContainer .disableButton:hover {
+        background: #222;
+        color: #333 !important;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    #soundboard {
+        border: dashed 2px var(--primary2);
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+        padding: 10px;
+        box-sizing: border-box;
+        margin: 30px 10px 10px 10px;
+    }
+    .songButton {
+        border-radius: 5px;
+        margin: 10px;
+        padding: 20px 5px;
+        cursor: pointer;
+        background: none;
+        border: solid 2px var(--primary2);
+        font-weight: bold;
+        color: var(--primary2);
+    }
+    .songButton:hover {
+        background: var(--primary1);
+        border: solid 2px var(--primary1);
+        color: #222;
+    }
+    .activeSoundboardButton {
+        animation: colorFade 1.5s infinite ease-in-out;
+        color: var(--primary1);
+    }
+    .activeSoundboardButton:hover {
+        color: #222 !important;
+    }
+    @keyframes colorFade {
+        0% {
+            border: solid 2px var(--primary2);
+            box-shadow: inset 0 0 20px var(--primary2);
+        }
+        50% {
+            border: solid 2px var(--primary1);
+            box-shadow: inset 0 0 20px var(--primary1);
+        }
+        100% {
+            border: solid 2px var(--primary2);
+            box-shadow: inset 0 0 20px var(--primary2);
+        }
+    }
+
+
+    #rightContainer {
+        height: 100vh;
+        width: 75vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+        box-sizing: border-box;
+    }
+
+    #rightSide {
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        border: solid 3px var(--secondary1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #rightSide h1 {
+        color: var(--text1);
+        padding-top: 20px;
+        text-transform: uppercase;
+    }
+
+    #editSongContainer {
+        width: 80%;
+        margin-top: 15px;
+        box-sizing: border-box;
+        padding: 15px 10px 5px 10px;
+        border: dashed 2px var(--secondary2);
+        display: flex;
+        flex-direction: column;
+    }
+    .editSongRow {
+        width: 98%;
+        height: 50px;
+        margin: 5px 1% 15px 1%;
+        border: solid 2px var(--secondary2);
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        color: var(--secondary2);
+    }
+    .editSongRow:hover{
+        border: solid 2px var(--secondary1);
+        color: var(--secondary1);
+    }
+
+    .songName {
+        cursor: default;
+        width: 50%;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+    }
+    .songName span {
+        font-style: italic;
+    }
+
+    .editSongControls {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+    }
+    .editSongControls div {
+        display: flex;
+        align-items: center;
+        cursor: default;
+    }
+    .editSongControls div input {
+        color: inherit;
+        width: 20%;
+        padding: 2px 0;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin-left: 6px;
+        border: none;
+        border-bottom: solid 1px var(--text1);
+        background: none;
+        outline: none;
+        cursor: pointer;
+    }
+    .editSongControls button {
+        background: #333;
+        border: none;
+        padding: 4px 8px;
+        cursor: pointer;
+        color: #b41414;
+        border-radius: 5px;
+    }
+    .editSongControls button:hover {
+        background: #444;
+    }
+
+</style>
+
+<!-- BODY -->
+<body>
+
+<div id="leftContainer">
+    <div id="leftSide">
+        <h1>Soundboard</h1>
+        <div class="controlsContainer">
+            <button id="stopButton" class="disableButton">STOP ALL SOUNDS</button>
+        </div>
+        <div id="soundboard">
+            <!-- Buttons will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
+<div id="rightContainer">
+    <div id="rightSide">
+        <h1>Edit Songs</h1>
+        <div class="controlsContainer">
+            <button id="addButton">Add New</button>
+            <input type="file" id="fileInput" style="display: none;">
+            <button id="clearStorageButton" style="color: #b41414;">Remove All</button>
+        </div>
+        <div id="editSongContainer">
+            <!-- Edit song rows will be dynamically added here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        const soundboardDiv = document.getElementById('soundboard');
+        const editSongContainer = document.getElementById('editSongContainer');
+        const addButton = document.getElementById('addButton');
+        const clearStorageButton = document.getElementById('clearStorageButton');
+        const stopButton = document.getElementById('stopButton');
+        const fileInput = document.getElementById('fileInput');
+        let mySongs = localStorage.getItem('mySongs') ? JSON.parse(localStorage.getItem('mySongs')) : {};
+        let currentAudio = null;
+        let activeButton = null; // Track the currently active button
+
+        // Function to create buttons and edit rows for saved songs
+        function createButtonsAndEditRows() {
+            for (let key in mySongs) {
+                const song = mySongs[key];
+                const button = createButton(song);
+                soundboardDiv.appendChild(button);
+                const editRow = createEditRow(song);
+                editSongContainer.appendChild(editRow);
+            }
+        }
+
+        // Function to create button for a song
+        function createButton(song) {
+            const button = document.createElement('button');
+            button.textContent = song.name;
+            button.classList.add('songButton'); // Add songButton class
+            button.addEventListener('click', function() {
+                stopCurrentAudio();
+                const audioElement = new Audio(song.url); // Constructing URL dynamically
+                if (song.startAt) {
+                    audioElement.currentTime = song.startAt;
+                }
+                audioElement.play();
+                currentAudio = audioElement;
+                toggleActiveButton(button);
+
+                document.querySelector('#stopButton').classList.remove('disableButton');
+
+                audioElement.addEventListener('ended', function() {
+                    if (activeButton === button) {
+                        songOverUpdate();
+                        activeButton = null;
+                    }
+                });
+            });
+            return button;
+        }
+
+        // Function to create edit row for a song
+        function createEditRow(song) {
+            const editRow = document.createElement('div');
+            editRow.classList.add('editSongRow');
+            const songNameDiv = document.createElement('div');
+            songNameDiv.classList.add('songName');
+            songNameDiv.innerHTML = `SONG: <span>${song.name}</span>`;
+            editRow.appendChild(songNameDiv);
+            const editSongControlsDiv = document.createElement('div');
+            editSongControlsDiv.classList.add('editSongControls');
+            const startingTimeDiv = document.createElement('div');
+            startingTimeDiv.innerHTML = `START AT <input type="number" value="${song.startAt || 0}" min="0" max="3600">`;
+            const startingTimeInput = startingTimeDiv.querySelector('input');
+            startingTimeInput.addEventListener('change', function() {
+                song.startAt = parseInt(startingTimeInput.value);
+                localStorage.setItem('mySongs', JSON.stringify(mySongs));
+            });
+            editSongControlsDiv.appendChild(startingTimeDiv);
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.addEventListener('click', function() {
+                delete mySongs[song.name];
+                localStorage.setItem('mySongs', JSON.stringify(mySongs));
+                editSongContainer.removeChild(editRow);
+                location.reload();
+            });
+            editSongControlsDiv.appendChild(removeButton);
+            editRow.appendChild(editSongControlsDiv);
+            return editRow;
+        }
+
+        // Function to handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const name = file.name;
+            const song = { name: name, url: name }; // Storing file name as URL
+            mySongs[name] = song;
+            localStorage.setItem('mySongs', JSON.stringify(mySongs));
+            const button = createButton(song);
+            soundboardDiv.appendChild(button);
+            const editRow = createEditRow(song);
+            editSongContainer.appendChild(editRow);
+
+            updateIsSong();
+        }
+
+        // Function to clear local storage
+        function clearLocalStorage() {
+            localStorage.removeItem('mySongs');
+            soundboardDiv.innerHTML = ''; // Clear buttons from the soundboard
+            editSongContainer.innerHTML = ''; // Clear edit rows
+            mySongs = {}; // Reset the local variable
+            location.reload();
+        }
+        function promptClearStorage() {
+            if (confirm("Remove all songs from soundboard?")) {
+                clearLocalStorage();
+            }
+        }
+
+        // Function to stop currently playing audio
+        function stopCurrentAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        }
+
+        // Function to toggle active button class
+        function toggleActiveButton(button) {
+            if (activeButton) {
+                activeButton.classList.remove('activeSoundboardButton');
+            }
+            button.classList.add('activeSoundboardButton');
+            activeButton = button;
+        }
+
+        // Function to stop all sounds
+        function stopAllSounds() {
+            stopCurrentAudio();
+            songOverUpdate();
+            const audioElements = document.querySelectorAll('audio');
+            audioElements.forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            if (activeButton) {
+                activeButton.classList.remove('activeSoundboardButton');
+                activeButton = null;
+            }
+        }
+
+        // Log saved songs when the page is loaded
+        console.log("Saved songs:");
+        console.log(mySongs);
+        updateIsSong();
+
+        // Add event listener for the "Add New" button
+        addButton.addEventListener('click', function() {
+            fileInput.click();
+            //document.getElementById('stopButton').classList.remove('disableButton');
+        });
+
+        // Update the class for STOP SOUNDS if there is songs added or not
+        function updateIsSong() {
+            const removeAllBtn = document.getElementById('clearStorageButton');
+            if (Object.keys(mySongs).length === 0) {
+                removeAllBtn.classList.add('disableButton');
+            } else {
+                removeAllBtn.classList.remove('disableButton');
+            }
+        }
+
+        // When a song is stopped or is over
+        function songOverUpdate() {
+            activeButton.classList.remove('activeSoundboardButton');
+            document.querySelector('#stopButton').classList.add('disableButton');
+        }
+
+        // Add event listener for file input change
+        fileInput.addEventListener('change', handleFileUpload);
+
+        // Add event listener for the "Clear Local Storage" button
+        clearStorageButton.addEventListener('click', promptClearStorage);
+
+        // Add event listener for the "STOP" button
+        stopButton.addEventListener('click', stopAllSounds);
+
+        // Call function to create buttons and edit rows for saved songs
+        createButtonsAndEditRows();
+    };
+</script>
+
+</body>
+</html>
