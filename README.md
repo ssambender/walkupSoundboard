@@ -1,6 +1,8 @@
 # Walkup Soundboard
 A local-based audio streaming interface designed to save song orders, and start times, to easily play walkup songs. 
 
+![Demo screenshot](https://github.com/ssambender/walkupSoundboard/blob/main/walkupsonglist%20screenshot.png?raw=true)
+
 ## How to set up
 - Create a folder/dir anywhere on your computer
 - Drag the **index.html** and **favicon.png** _(optional)_ in that created folder
